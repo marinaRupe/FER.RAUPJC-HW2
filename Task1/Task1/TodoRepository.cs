@@ -53,22 +53,29 @@ namespace Repositories
 
         public List<TodoItem> GetActive()
         {
-            return _inMemoryTodoDatabase.Where(t => t.IsCompleted == false).ToList();
+            return _inMemoryTodoDatabase.Where(t => t.IsCompleted == false)
+                                        .OrderByDescending(t => t.DateCreated)
+                                        .ToList();
         }
 
         public List<TodoItem> GetAll()
         {
-            return _inMemoryTodoDatabase.ToList();
+            return _inMemoryTodoDatabase.OrderByDescending(t => t.DateCreated)
+                                        .ToList();
         }
 
         public List<TodoItem> GetCompleted()
         {
-            return _inMemoryTodoDatabase.Where(t => t.IsCompleted == true).ToList();
+            return _inMemoryTodoDatabase.Where(t => t.IsCompleted)
+                                        .OrderByDescending(t => t.DateCreated)
+                                        .ToList();
         }
 
         public List<TodoItem> GetFiltered(Func<TodoItem, bool> filterFunction)
         {
-            return _inMemoryTodoDatabase.Where(filterFunction).ToList();
+            return _inMemoryTodoDatabase.Where(filterFunction)
+                                        .OrderByDescending(t => t.DateCreated)
+                                        .ToList();
         }
 
         public bool MarkAsCompleted(Guid todoId)

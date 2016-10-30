@@ -64,7 +64,7 @@ namespace Repositories.Tests
 
 
         [TestMethod]
-        public void MarkingExistingUncompleteItemAsCompletedReturnsTrue()
+        public void MarkingExistingUncompletedItemAsCompletedReturnsTrue()
         {
             ITodoRepository repository = new TodoRepository();
             var todoItem = new TodoItem("Groceries");
@@ -73,11 +73,12 @@ namespace Repositories.Tests
 
             var markedAsCompleted = repository.MarkAsCompleted(todoItem.Id);
             Assert.AreEqual(markedAsCompleted, true);
+            Assert.AreEqual(repository.GetCompleted().Count, 1);
         }
 
 
         [TestMethod]
-        public void MarkingExistingCompleteItemAsCompletedReturnsFalse()
+        public void MarkingExistingCompletedItemAsCompletedReturnsFalse()
         {
             ITodoRepository repository = new TodoRepository();
             var todoItem = new TodoItem("Groceries");
@@ -87,6 +88,7 @@ namespace Repositories.Tests
 
             var markedAsCompleted = repository.MarkAsCompleted(todoItem.Id);
             Assert.AreEqual(markedAsCompleted, false);
+            Assert.AreEqual(repository.GetCompleted().Count, 1);
         }
 
 
@@ -98,6 +100,108 @@ namespace Repositories.Tests
 
             var markedAsCompleted = repository.MarkAsCompleted(todoItem.Id);
             Assert.AreEqual(markedAsCompleted, false);
+            Assert.AreEqual(repository.GetCompleted().Count, 0);
+        }
+
+
+        [TestMethod]
+        public void GettingActiveTodoItems()
+        {
+            ITodoRepository repository = new TodoRepository();
+            var todoItem = new TodoItem("Apples");
+            var todoItem2 = new TodoItem("Bananas");
+            var todoItem3 = new TodoItem("Watermelons");
+            var todoItem4 = new TodoItem("Hamburgers");
+
+            repository.Add(todoItem);
+            repository.Add(todoItem2);
+            repository.Add(todoItem3);
+            repository.Add(todoItem4);
+
+            repository.MarkAsCompleted(todoItem.Id);
+            repository.MarkAsCompleted(todoItem3.Id);
+
+            var active = repository.GetActive();
+
+            Assert.AreEqual(active.Count, 2);
+            Assert.AreEqual(active[0].IsCompleted, false);
+            Assert.AreEqual(active[1].IsCompleted, false);
+        }
+
+
+        [TestMethod]
+        public void GettingCompletedTodoItems()
+        {
+            ITodoRepository repository = new TodoRepository();
+            var todoItem = new TodoItem("Apples");
+            var todoItem2 = new TodoItem("Bananas");
+            var todoItem3 = new TodoItem("Watermelons");
+            var todoItem4 = new TodoItem("Hamburgers");
+
+            repository.Add(todoItem);
+            repository.Add(todoItem2);
+            repository.Add(todoItem3);
+            repository.Add(todoItem4);
+
+            repository.MarkAsCompleted(todoItem.Id);
+            repository.MarkAsCompleted(todoItem3.Id);
+
+            var completed = repository.GetCompleted();
+            
+            Assert.AreEqual(completed.Count, 2);
+            Assert.AreEqual(completed[0].IsCompleted, true);
+            Assert.AreEqual(completed[1].IsCompleted, true);
+        }
+
+
+        [TestMethod]
+        public void GettingCompletedAndActiveTodoItemsDiffers()
+        {
+            ITodoRepository repository = new TodoRepository();
+            var todoItem1 = new TodoItem("Apples");
+            var todoItem2 = new TodoItem("Bananas");
+            var todoItem3 = new TodoItem("Watermelons");
+            var todoItem4 = new TodoItem("Hamburgers");
+            var todoItem5 = new TodoItem("Eggs");
+
+            repository.Add(todoItem1);
+            repository.Add(todoItem2);
+            repository.Add(todoItem3);
+            repository.Add(todoItem4);
+
+            repository.MarkAsCompleted(todoItem1.Id);
+            repository.MarkAsCompleted(todoItem3.Id);
+            repository.MarkAsCompleted(todoItem4.Id);
+
+            var completed = repository.GetCompleted();
+            var active = repository.GetActive();
+
+            var completed2 = repository.GetAll().Except(active).ToList();
+            var active2 = repository.GetAll().Except(completed).ToList();
+
+            Assert.AreEqual(completed.Count, 3);
+            Assert.AreEqual(completed2.Count, 3);
+            Assert.AreEqual(active.Count, 1);
+            Assert.AreEqual(active2.Count, 1);
+        }
+
+
+        [TestMethod]
+        public void GettingAllTodoItems()
+        {
+            ITodoRepository repository = new TodoRepository();
+            var todoItem1 = new TodoItem("Apples");
+            var todoItem2 = new TodoItem("Bananas");
+            var todoItem3 = new TodoItem("Watermelons");
+            var todoItem4 = new TodoItem("Hamburgers");
+            var todoItem5 = new TodoItem("Eggs");
+
+            repository.Add(todoItem1);
+            repository.Add(todoItem2);
+            repository.Add(todoItem3);
+            repository.Add(todoItem4);
+
+            Assert.AreEqual(repository.GetAll().Count, 4);
         }
 
 
@@ -111,6 +215,30 @@ namespace Repositories.Tests
             bool removed = repository.Remove(todoItem.Id);
             Assert.AreEqual(removed, false);
             Assert.IsTrue(repository.Get(todoItem.Id) == null);
+        }
+
+
+        [TestMethod]
+        public void GettingFilteredTodoItems()
+        {
+            ITodoRepository repository = new TodoRepository();
+            var todoItem1 = new TodoItem("Apples");
+            var todoItem2 = new TodoItem("Bananas");
+            var todoItem3 = new TodoItem("Apricots");
+            var todoItem4 = new TodoItem("Hamburgers");
+
+            repository.Add(todoItem1);
+            repository.Add(todoItem2);
+            repository.Add(todoItem3);
+            repository.Add(todoItem4);
+
+            Func<TodoItem, bool> filterFunction = t => t.Text.StartsWith("A");
+            var filtered = repository.GetFiltered(filterFunction).OrderBy(t => t.Text).ToList();
+
+            Assert.AreEqual(filtered.Count, 2);
+            Assert.AreEqual(filtered[0].Text, "Apples");
+            Assert.AreEqual(filtered[1].Text, "Apricots");
+
         }
 
         [TestMethod]
