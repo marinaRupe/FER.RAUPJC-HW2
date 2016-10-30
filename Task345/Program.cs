@@ -47,7 +47,7 @@ namespace Task345
                                                           .OrderBy(s => s.Jmbag)
                                                           .ToArray();
 
-            //Student[]  croatianStudentsOnMultipleUniversities = universities.
+            Student[] croatianStudentsOnMultipleUniversities = universities.SelectMany(u => u.Students).GroupBy(s => s).SelectMany(s => s.Reverse().Skip(1)).Distinct().ToArray();
 
             University[] femaleOnlyOrMixedGenderUniversities = universities.Where(u => u.Students.Any(s => s.Gender.Equals(Gender.Female))).ToArray();
 
@@ -108,7 +108,7 @@ namespace Task345
                 universities[i] = new University
                 {
                     Name = universityNames[i],
-                    Students = GetRandomStudents(students, 4)
+                    Students = GetRandomStudents(students, 3)
                 };
 
                 /*
