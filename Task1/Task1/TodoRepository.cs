@@ -7,39 +7,58 @@ using System.Threading.Tasks;
 using Models;
 using Homework1;
 
-namespace Task1
+namespace Repositories
 {
+    /// <summary >
+    /// Class  that  encapsulates  all  the  logic  for  accessing  TodoTtems.
+    ///  </summary >
     public class TodoRepository : ITodoRepository
     {
-        private IEnumerable<TodoItem> _todoRepository = new GenericList<TodoItem>();
+        /// <summary >
+        /// Repository  does  not  fetch  todoItems  from  the  actual  database ,
+        /// it uses in  memory  storage  for  this  excersise.
+        /// </summary >
+        private readonly IGenericList<TodoItem> _inMemoryTodoDatabase;
+
+        public TodoRepository(IGenericList<TodoItem> initialDbState = null)
+        {
+            _inMemoryTodoDatabase = initialDbState  ?? new GenericList <TodoItem >();
+        }
         public void Add(TodoItem todoItem)
         {
-            ((IGenericList<TodoItem>)_todoRepository).Add(todoItem);
+            if (todoItem == null)
+            {
+                throw new ArgumentNullException();
+            }
+            else
+            {
+                _inMemoryTodoDatabase.Add(todoItem);
+            }
         }
 
         public TodoItem Get(Guid todoId)
         {
-            return _todoRepository.Where(t => t.Id.Equals(todoId)).FirstOrDefault();
+            return _inMemoryTodoDatabase.Where(t => t.Id.Equals(todoId)).FirstOrDefault();
         }
 
         public List<TodoItem> GetActive()
         {
-            return _todoRepository.Where(t => t.IsCompleted == false).ToList();
+            return _inMemoryTodoDatabase.Where(t => t.IsCompleted == false).ToList();
         }
 
         public List<TodoItem> GetAll()
         {
-            return _todoRepository.ToList();
+            return _inMemoryTodoDatabase.ToList();
         }
 
         public List<TodoItem> GetCompleted()
         {
-            return _todoRepository.Where(t => t.IsCompleted == true).ToList();
+            return _inMemoryTodoDatabase.Where(t => t.IsCompleted == true).ToList();
         }
 
         public List<TodoItem> GetFiltered(Func<TodoItem, bool> filterFunction)
         {
-            return _todoRepository.Where(filterFunction).ToList();
+            return _inMemoryTodoDatabase.Where(filterFunction).ToList();
         }
 
         public bool MarkAsCompleted(Guid todoId)
@@ -58,12 +77,13 @@ namespace Task1
 
         public bool Remove(Guid todoId)
         {
-            try
+            TodoItem item = _inMemoryTodoDatabase.Where(t => t.Id.Equals(todoId)).FirstOrDefault();
+
+            if (item != null)
             {
-                _todoRepository = _todoRepository.Where(t => t.Id != todoId);
-                return true;
+                return _inMemoryTodoDatabase.Remove(item);
             }
-            catch
+            else
             {
                 return false;
             }
@@ -76,7 +96,7 @@ namespace Task1
 
             if (item == null)
             {
-                this.Add(item);
+                _inMemoryTodoDatabase.Add(todoItem);
             }
             else
             {
