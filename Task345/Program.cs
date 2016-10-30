@@ -19,14 +19,15 @@ namespace Task345
         {
             int[] integers = new[] {1, 2, 2, 2, 3, 3, 4, 5};
 
-            //string[] strings = integers.GroupBy(n => n)
-            //      .Select(c => { "Broj " + c.Key.ToString, " ponavlja se ", c.Count().ToString, " puta"});
+            string[] strings = integers.GroupBy(i => i)
+                                        .Select(group => $"Broj {group.Key} ponavlja se {group.Count()} puta")
+                                        .ToArray();
 
-            //  strings [0] = Broj 1 ponavlja  se 1 puta
-            //  strings [1] = Broj 2 ponavlja  se 3 puta
-            //  strings [2] = Broj 3 ponavlja  se 2 puta
-            //  strings [3] = Broj 4 ponavlja  se 1 puta
-            //  strings [4] = Broj 5 ponavlja  se 1 puta
+            Console.WriteLine(strings[0]);
+            Console.WriteLine(strings[1]);
+            Console.WriteLine(strings[2]);
+            Console.WriteLine(strings[3]);
+            Console.WriteLine(strings[4]);
         }
 
 

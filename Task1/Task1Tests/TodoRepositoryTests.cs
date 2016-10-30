@@ -108,17 +108,17 @@ namespace Repositories.Tests
         public void GettingActiveTodoItems()
         {
             ITodoRepository repository = new TodoRepository();
-            var todoItem = new TodoItem("Apples");
+            var todoItem1 = new TodoItem("Apples");
             var todoItem2 = new TodoItem("Bananas");
             var todoItem3 = new TodoItem("Watermelons");
             var todoItem4 = new TodoItem("Hamburgers");
 
-            repository.Add(todoItem);
+            repository.Add(todoItem1);
             repository.Add(todoItem2);
             repository.Add(todoItem3);
             repository.Add(todoItem4);
 
-            repository.MarkAsCompleted(todoItem.Id);
+            repository.MarkAsCompleted(todoItem1.Id);
             repository.MarkAsCompleted(todoItem3.Id);
 
             var active = repository.GetActive();
@@ -133,17 +133,17 @@ namespace Repositories.Tests
         public void GettingCompletedTodoItems()
         {
             ITodoRepository repository = new TodoRepository();
-            var todoItem = new TodoItem("Apples");
+            var todoItem1 = new TodoItem("Apples");
             var todoItem2 = new TodoItem("Bananas");
             var todoItem3 = new TodoItem("Watermelons");
             var todoItem4 = new TodoItem("Hamburgers");
 
-            repository.Add(todoItem);
+            repository.Add(todoItem1);
             repository.Add(todoItem2);
             repository.Add(todoItem3);
             repository.Add(todoItem4);
 
-            repository.MarkAsCompleted(todoItem.Id);
+            repository.MarkAsCompleted(todoItem1.Id);
             repository.MarkAsCompleted(todoItem3.Id);
 
             var completed = repository.GetCompleted();
@@ -168,10 +168,11 @@ namespace Repositories.Tests
             repository.Add(todoItem2);
             repository.Add(todoItem3);
             repository.Add(todoItem4);
+            repository.Add(todoItem5);
 
             repository.MarkAsCompleted(todoItem1.Id);
             repository.MarkAsCompleted(todoItem3.Id);
-            repository.MarkAsCompleted(todoItem4.Id);
+            repository.MarkAsCompleted(todoItem5.Id);
 
             var completed = repository.GetCompleted();
             var active = repository.GetActive();
@@ -181,8 +182,8 @@ namespace Repositories.Tests
 
             Assert.AreEqual(completed.Count, 3);
             Assert.AreEqual(completed2.Count, 3);
-            Assert.AreEqual(active.Count, 1);
-            Assert.AreEqual(active2.Count, 1);
+            Assert.AreEqual(active.Count, 2);
+            Assert.AreEqual(active2.Count, 2);
         }
 
 
@@ -195,13 +196,16 @@ namespace Repositories.Tests
             var todoItem3 = new TodoItem("Watermelons");
             var todoItem4 = new TodoItem("Hamburgers");
             var todoItem5 = new TodoItem("Eggs");
+            var todoItem6 = new TodoItem("Apricots");
 
             repository.Add(todoItem1);
             repository.Add(todoItem2);
             repository.Add(todoItem3);
             repository.Add(todoItem4);
+            repository.Add(todoItem5);
+            repository.Add(todoItem6);
 
-            Assert.AreEqual(repository.GetAll().Count, 4);
+            Assert.AreEqual(repository.GetAll().Count, 6);
         }
 
 
@@ -287,9 +291,5 @@ namespace Repositories.Tests
             TodoItem itemFromRepository = repository.Get(todoItem.Id);
             Assert.AreEqual(itemFromRepository, todoItem);
         }
-
-
-        
-
     }
 }
