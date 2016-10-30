@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Models;
 using Homework1;
+using Task1;
 
 namespace Repositories
 {
@@ -32,13 +33,22 @@ namespace Repositories
             }
             else
             {
-                _inMemoryTodoDatabase.Add(todoItem);
+                TodoItem item = _inMemoryTodoDatabase.FirstOrDefault(t => t.Id.Equals(todoItem.Id));
+
+                if (item != null)
+                {
+                    throw new DuplicateTodoItemException("duplicate id: " + todoItem.Id);
+                }
+                else
+                {
+                    _inMemoryTodoDatabase.Add(todoItem);
+                }
             }
         }
 
         public TodoItem Get(Guid todoId)
         {
-            return _inMemoryTodoDatabase.Where(t => t.Id.Equals(todoId)).FirstOrDefault();
+            return _inMemoryTodoDatabase.FirstOrDefault(t => t.Id.Equals(todoId));
         }
 
         public List<TodoItem> GetActive()
@@ -63,21 +73,29 @@ namespace Repositories
 
         public bool MarkAsCompleted(Guid todoId)
         {
-            try
-            {
-                this.Get(todoId).MarkAsCompleted();
-                return true;
-            }
-            catch
+            TodoItem item = this.Get(todoId);
+
+            if (item == null)
             {
                 return false;
             }
-            
+            else
+            {
+                if (item.IsCompleted)
+                {
+                    return false;
+                }
+                else
+                {
+                    item.MarkAsCompleted();
+                    return true;
+                }
+            }   
         }
 
         public bool Remove(Guid todoId)
         {
-            TodoItem item = _inMemoryTodoDatabase.Where(t => t.Id.Equals(todoId)).FirstOrDefault();
+            TodoItem item = this.Get(todoId);
 
             if (item != null)
             {

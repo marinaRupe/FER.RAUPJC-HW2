@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Task1;
 
 namespace Repositories.Tests
 {
@@ -31,6 +32,17 @@ namespace Repositories.Tests
             Assert.IsTrue(repository.Get(todoItem.Id) != null);
         }
 
+
+        [TestMethod]
+        [ExpectedException(typeof(DuplicateTodoItemException))]
+        public void AddingExistingItemWillThrowException()
+        {
+            ITodoRepository repository = new TodoRepository();
+            var todoItem = new TodoItem("Groceries");
+            repository.Add(todoItem);
+            repository.Add(todoItem);
+        }
+
         [TestMethod]
         public void GettingExistingItemWillReturnItemFromDatabase()
         {
@@ -42,13 +54,52 @@ namespace Repositories.Tests
             Assert.AreEqual(item, todoItem);
         }
 
-        public void GettingNotExistingItemWillReturnNull()
+        public void GettingNotExistingItemWillReturnsNull()
         {
             ITodoRepository repository = new TodoRepository();
             var todoItem = new TodoItem("Groceries");
 
             Assert.IsTrue(repository.Get(todoItem.Id) == null);
         }
+
+
+        [TestMethod]
+        public void MarkingExistingUncompleteItemAsCompletedReturnsTrue()
+        {
+            ITodoRepository repository = new TodoRepository();
+            var todoItem = new TodoItem("Groceries");
+
+            repository.Add(todoItem);
+
+            var markedAsCompleted = repository.MarkAsCompleted(todoItem.Id);
+            Assert.AreEqual(markedAsCompleted, true);
+        }
+
+
+        [TestMethod]
+        public void MarkingExistingCompleteItemAsCompletedReturnsFalse()
+        {
+            ITodoRepository repository = new TodoRepository();
+            var todoItem = new TodoItem("Groceries");
+
+            repository.Add(todoItem);
+            repository.MarkAsCompleted(todoItem.Id);
+
+            var markedAsCompleted = repository.MarkAsCompleted(todoItem.Id);
+            Assert.AreEqual(markedAsCompleted, false);
+        }
+
+
+        [TestMethod]
+        public void MarkingNotExistingItemAsCompletedReturnsFalse()
+        {
+            ITodoRepository repository = new TodoRepository();
+            var todoItem = new TodoItem("Groceries");
+
+            var markedAsCompleted = repository.MarkAsCompleted(todoItem.Id);
+            Assert.AreEqual(markedAsCompleted, false);
+        }
+
 
         [TestMethod]
         public void RemovingNotExistingItemFromDatabase()
@@ -110,16 +161,7 @@ namespace Repositories.Tests
         }
 
 
-        /*
-        [TestMethod]
-        [ExpectedException(typeof(DuplicateTodoItemException))]
-        public void AddingExistingItemWillThrowException()
-        {
-            ITodoRepository repository = new TodoRepository();
-            var todoItem = new TodoItem("Groceries");
-            repository.Add(todoItem);
-            repository.Add(todoItem);
-        }
-        */
+        
+
     }
 }
