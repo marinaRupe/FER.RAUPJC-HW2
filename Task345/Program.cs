@@ -107,15 +107,17 @@ namespace Task345
                 universities[i] = new University
                 {
                     Name = universityNames[i],
-                    Students = GetRandomStudents(students, 2)
+                    Students = GetRandomStudents(students, 4)
                 };
 
+                /*
                 Console.WriteLine(universities[i].Name);
                 foreach (Student t in universities[i].Students)
                 {
                     Console.WriteLine(t.Name + ", " + t.Gender);
                 }
                 Console.WriteLine();
+                */
             }
 
             return universities;
@@ -218,10 +220,7 @@ namespace Task345
                 {
                     Gender = gender == "ž" ? Gender.Female : Gender.Male
                 };
-
-
             }
-
             return students;
         }
         
